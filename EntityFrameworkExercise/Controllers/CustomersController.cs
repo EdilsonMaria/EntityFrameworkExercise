@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkExercise.Data;
 using EntityFrameworkExercise.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkExercise.Controllers;
 
@@ -12,7 +13,7 @@ public class CustomersController(StoreContext context) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
     {
-        return default;
+        return await context.Customers.ToListAsync();
     }
 
     // GET: api/Customers/5
