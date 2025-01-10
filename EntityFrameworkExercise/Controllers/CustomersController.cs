@@ -20,27 +20,62 @@ public class CustomersController(StoreContext context) : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Customer>> GetCustomer(int id)
     {
-        return default;
+        return await context.Customers.FirstAsync(a => a.Id == id);
     }
 
     // PUT: api/Customers/5
     [HttpPut("{id}")]
     public async Task<IActionResult> PutCustomer(int id, Customer customer)
     {
-        return default;
+        context.Entry(customer).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!CustomerExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
     }
 
     // POST: api/Customers
     [HttpPost]
     public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
     {
-        return default;
+        context.Customers.Add(customer);
+        await context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id }, customer);
     }
 
     // DELETE: api/Customers/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCustomer(int id)
     {
-        return default;
+        var customer = await context.Customers.FindAsync(id);
+        if (customer == null)
+        {
+            return NotFound();
+        }
+
+        context.Customers.Remove(customer);
+        await context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    private bool CustomerExists(int id)
+    {
+        return context.Customers.Any(a => a.Id == id);
     }
 }
